@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jelajah Server Discord - Lunaris</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #1e1f22;
+            color: #dbdee1;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ================= WELCOME SCREEN ================= */
+        #welcome-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            background: radial-gradient(circle at center, #2b2d31 0%, #111214 100%);
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        .welcome-card {
+            background: #2b2d31;
+            padding: 40px 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid #3f4147;
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .welcome-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .welcome-logo {
+            font-size: 4rem;
+            margin-bottom: 10px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .welcome-title {
+            color: #ffffff;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .welcome-desc {
+            color: #949ba4;
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            color: #b5bac1;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            background-color: #1e1f22;
+            border: 1px solid #3f4147;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .input-group input:focus {
+            border-color: #5865f2;
+            box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.3);
+        }
+
+        .btn-enter {
+            width: 100%;
+            padding: 14px;
+            background-color: #5865f2;
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(88, 101, 242, 0.4);
+            animation: pulseGlow 2.5s infinite;
+        }
+
+        .btn-enter:hover {
+            background-color: #4752c4;
+            transform: scale(1.02);
+            box-shadow: 0 6px 20px rgba(88, 101, 242, 0.6);
+        }
+
+        .btn-enter:active {
+            transform: scale(0.98);
+        }
+
+        /* ================= MAIN CONTENT ================= */
+        #main-content {
+            display: none;
+            padding: 20px;
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        .user-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #2b2d31;
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #3f4147;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .user-bar-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar-badge {
+            width: 35px;
+            height: 35px;
+            background-color: #5865f2;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .user-name-display {
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .top-nav {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn-lang, .btn-change-user {
+            background-color: #1e1f22;
+            color: #ffffff;
+            border: 1px solid #4e5058;
+            padding: 8px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-lang:hover, .btn-change-user:hover {
+            background-color: #35373c;
+            border-color: #5865f2;
+            box-shadow: 0 0 10px rgba(88, 101, 242, 0.3);
+        }
+
+        header {
+            text-align: center;
+            background: linear-gradient(-45deg, #1e1f22, #2b2d31, #5865f2, #2b2d31);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+            padding: 40px 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            border: 1px solid #3f4147;
+        }
+
+        header h1 {
+            color: #ffffff;
+            font-size: 2.3rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        header p {
+            color: #e0e3e7;
+            font-size: 1.05rem;
+        }
+
+        .btn-join {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 14px 28px;
+            background-color: #5865f2;
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.05rem;
+            border-radius: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(88, 101, 242, 0.4);
+        }
+
+        .btn-join:hover {
+            background-color: #4752c4;
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(88, 101, 242, 0.7);
+        }
+
+        section {
+            background-color: #2b2d31;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            color: #ffffff;
+            border-bottom: 2px solid #3f4147;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+        }
+
+        .category-item {
+            margin-bottom: 22px;
+            background: #232428;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid transparent;
+            transition: border-color 0.3s ease;
+        }
+
+        .category-item:hover {
+            border-left-color: #5865f2;
+        }
+
+        .category-title {
+            font-weight: bold;
+            color: #949ba4;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            border-bottom: 1px dashed #3f4147;
+            padding-bottom: 5px;
+        }
+
+        .channel-list {
+            list-style: none;
+        }
+
+        .channel-item {
+            border-bottom: 1px solid #2b2d31;
+        }
+
+        .channel-item:last-child {
+            border-bottom: none;
+        }
+
+        .channel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .channel-header:hover {
+            background-color: #2b2d31;
+            padding-left: 18px;
+        }
+
+        .channel-name {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .channel-header:hover .channel-name {
+            color: #5865f2;
+        }
+
+        .channel-arrow {
+            color: #949ba4;
+            font-size: 0.8rem;
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+
+        .channel-detail {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0, 1, 0, 1), padding 0.3s ease, opacity 0.3s ease;
+            background-color: #1e1f22;
+            border-radius: 5px;
+            margin: 0 8px;
+            opacity: 0;
+        }
+
+        .channel-desc {
+            color: #dbdee1;
+            font-size: 0.9rem;
+            padding: 0 12px;
+        }
+
+        .channel-item.active .channel-arrow {
+            transform: rotate(90deg) scale(1.2);
+            color: #5865f2;
+            text-shadow: 0 0 8px rgba(88, 101, 242, 0.8);
+        }
+
+        .channel-item.active .channel-detail {
+            max-height: 120px;
+            padding: 12px 0;
+            margin-bottom: 8px;
+            opacity: 1;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #949ba4;
+            font-size: 0.9rem;
+        }
+
+        /* KEYFRAMES ANIMASI */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 0 0 rgba(88, 101, 242, 0.6); }
+            70% { box-shadow: 0 0 0 14px rgba(88, 101, 242, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(88, 101, 242, 0); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. WELCOME SCREEN WITH USERNAME INPUT -->
+    <div id="welcome-screen">
+        <div class="welcome-card">
+            <div class="welcome-logo">🌙</div>
+            <h1 class="welcome-title">Lunaris Server</h1>
+            <p class="welcome-desc">Selamat datang! Masukkan nama kamu untuk mulai menjelajahi server Discord Lunaris.</p>
+
+            <form onsubmit="handleLogin(event)">
+                <div class="input-group">
+                    <label for="username-input">Username / Nama Panggilan</label>
+                    <input type="text" id="username-input" placeholder="Masukkan nama kamu..." required autocomplete="off">
+                </div>
+                <button type="submit" class="btn-enter">Masuk ke Eksplorasi 🚀</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. MAIN EXPLORATION CONTENT -->
+    <div id="main-content">
+        <div class="container">
+            <!-- User Bar -->
+            <div class="user-bar">
+                <div class="user-bar-info">
+                    <div class="user-avatar-badge" id="avatar-badge">U</div>
+                    <div>
+                        <span style="font-size: 0.8rem; color: #949ba4;">Halo,</span>
+                        <div class="user-name-display" id="display-username">Pengunjung</div>
+                    </div>
+                </div>
+                <div class="top-nav">
+                    <button class="btn-change-user" onclick="changeUser()">✏️ Ganti Nama</button>
+                    <button class="btn-lang" onclick="toggleLanguage()">🌐 <span id="lang-toggle-text">English</span></button>
+                </div>
+            </div>
+
+            <!-- Header Utama -->
+            <header>
+                <h1 id="header-title">🌙 Selamat Datang di Lunaris</h1>
+                <p id="header-subtitle">Pusat Komunitas Night Owls, Gamers, dan Tempat Nongkrong Santai!</p>
+                <a href="https://discord.gg/Y3EZRWJWC" target="_blank" rel="noopener noreferrer" class="btn-join" id="btn-join-text">
+                    🚀 Masuk ke Server Discord
+                </a>
+            </header>
+
+            <!-- Informasi Server -->
+            <section>
+                <h2 id="about-title">📖 Tentang Server Lunaris</h2>
+                <p id="about-desc">Lunaris adalah komunitas Discord santai untuk bersosialisasi, bermain game, berbagi minat, dan bertemu orang-orang baru. Sebuah kolaborasi antara Lunaris dan Gemini.</p>
+            </section>
+
+            <!-- Kategori & Channel Utama -->
+            <section>
+                <h2 id="channels-title">💬 Kategori & Channel Utama</h2>
+
+                <!-- MAIN ENTRANCE -->
+                <div class="category-item">
+                    <div class="category-title">✦----‹ 🏠 MAIN ENTRANCE 🏠 ›----✦</div>
+                    <ul class="channel-list">
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ╭・🎃・welcome</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-welcome">Tempat menyambut member baru yang bergabung di server.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ┊・🎀・goodbye</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-goodbye">Pemberitahuan ketika ada anggota yang keluar dari server.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ┊・🎓・rules</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-rules">Aturan resmi server yang wajib dipatuhi seluruh member.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ┊・👏・introductions</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-introductions">Perkenalkan diri kamu kepada anggota komunitas lainnya di sini.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ┊・🌙・explore-lunaris</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-explore">Panduan dan informasi dasar navigasi server Lunaris.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ┊・🎭・pick-roles</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-pickroles">Pilih role kamu sendiri sesuai hobi, minat, dan identitas.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ╰・📢・announcements</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-announcements">Pengumuman penting dan pembaruan terbaru dari pengurus server.</p></div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- COMMUNITY -->
+                <div class="category-item">
+                    <div class="category-title">✦----‹ 💬 COMMUNITY 💬 ›----✦</div>
+                    <ul class="channel-list">
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ╭・💬・chat</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-chat">Area obrolan umum bebas untuk menyapa dan diskusi harian.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ┊・😂・memes</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-memes">Berbagi gambar lucu, meme, dan konten hiburan.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ┊・📷・media</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-media">Tempat berbagi tautan akun media sosial atau foto harian.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ┊・🎨・art</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-art">Pameran karya seni, gambar, atau hasil desain buatanmu.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ┊・🕊️・quotes</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-quotes">Berbagi kata-kata bijak, motivasi, atau kutipan favorit.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ╰・🎵・music</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-music">Diskusi seputar musik, lagu favorit, atau playlist.</p></div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- GAMING -->
+                <div class="category-item">
+                    <div class="category-title">✦----‹ 🎮 GAMING 🎮 ›----✦</div>
+                    <ul class="channel-list">
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ╭・🎮・game-chat</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-gamechat">Diskusi umum seputar game, update, dan rekomendasi game.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ┊・🎲・looking-for-group</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-lfg">Cari teman se-party atau tim untuk mabar game favorit.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ┊・🏆・achievements</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-achievements">Pamer pencapaian, trophy, atau rank di game kamu.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ┊・📹・game-video</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-gamevideo">Berbagi cuplikan video gameplay atau highlight keren.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ╰・📷・game-screenshots</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-gamescreenshots">Membagikan tangkapan layar (screenshot) saat bermain game.</p></div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- OFF TOPIC -->
+                <div class="category-item">
+                    <div class="category-title">✦----‹ 🔵 OFF TOPIC 🔵 ›----✦</div>
+                    <ul class="channel-list">
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ╭・🔮・random</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-random">Obrolan topik acak di luar tema umum server.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ┊・⭐・rate</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-rate">Minta opini atau penilaian dari member lain tentang topik tertentu.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ┊・💡・suggestions</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-suggestions">Kirimkan ide atau saran demi kemajuan server Lunaris.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ╰・📖・story-time</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-storytime">Bagikan cerita pengalaman menarik, curhat, atau pengalaman hidup.</p></div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- BOTS -->
+                <div class="category-item">
+                    <div class="category-title">✦----‹ 🤖 BOTS 🤖 ›----✦</div>
+                    <ul class="channel-list">
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ╭・🤖・bot-commands</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-botcommands">Area umum untuk mengetik perintah (command) bot.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ┊・🦊・owo</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-owo">Channel khusus bermain bot OwO.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ┊・🌕・xavier</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-xavier">Channel khusus interaksi bot Xavier.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ┊・👺・koya</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-koya">Channel khusus perintah bot Koya.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ┊・💤・afk-set</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-afkset">Atur status AFK kamu di server.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ┊・🎀・weekly-highlights</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-highlights">Rangkuman aktivitas menarik tiap minggunya dari bot.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ┊・🔹・level-up</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-levelup">Notifikasi kenaikan level keaktifan member di server.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ╰・📣・event</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-bot-event">Informasi event otomatis yang dipicu oleh sistem bot.</p></div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- SUPPORT -->
+                <div class="category-item">
+                    <div class="category-title">✦----‹ 🛠️ SUPPORT 🛠️ ›----✦</div>
+                    <ul class="channel-list">
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ╭・🎟️・create-ticket</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-ticket">Buat tiket jika butuh bantuan khusus dari staf.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ┊・💾・ticket-save</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-ticketsave">Arsip riwayat percakapan tiket bantuan.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ┊・🐞・bug-reports</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-bugreports">Laporkan masalah teknis atau bug di server.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name"># ╰・💡・suggestions</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-support-suggestions">Saran khusus terkait sistem bantuan server.</p></div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- STAFF (PRIVAT) -->
+                <div class="category-item">
+                    <div class="category-title">✦----‹ 🥊 STAFF 🥊 ›----✦</div>
+                    <ul class="channel-list">
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name">📢 staff-announcement</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-staffannouncement">Pengumuman internal khusus moderator dan admin.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name">💬 staff-chat</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-staffchat">Diskusi internal tim staf Lunaris.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name">🚨 automod-alerts</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-automod">Laporan otomatis dari AutoMod mengenai pelanggaran.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name">🔊 Staff Meeting</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-staffmeeting">Voice room untuk rapat rutin internal staf.</p></div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- VOICE CHANNELS -->
+                <div class="category-item">
+                    <div class="category-title">✦----‹ 🔊 Create VC Room 🔊 ›----✦ & 🔊 ROOM 1 - 3</div>
+                    <ul class="channel-list">
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name">📖 voice-guide</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-vcguide">Panduan penggunaan fitur voice channel dinamis.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name">⚙️ voice-settings</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-vcsettings">Pengaturan batas member atau nama ruang suara.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name">👑 Room (Dio)</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-privateroom">🔒 Ruang suara privat khusus OWNER SAJA. Anggota lain tidak dapat bergabung.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name">🔊 General</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-vcgeneral">Ruang obrolan suara santai umum.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name">🎮 Gaming</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-vcgaming">Ruang obrolan suara khusus mabar game.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name">🎵 Music Lounge</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-vcmusic">Ruang mendengarkan musik bersama.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name">😴 AFK</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-vcafk">Ruang suara santai khusus member yang ingin AFK atau sekadar pasif di VC.</p></div>
+                        </li>
+                        <li class="channel-item">
+                            <div class="channel-header" onclick="toggleChannel(this)">
+                                <span class="channel-name">➕ Create Room 1 - 3</span>
+                                <span class="channel-arrow">▶</span>
+                            </div>
+                            <div class="channel-detail"><p class="channel-desc" id="c-createroom">Klik untuk membuat temporary voice channel kamu sendiri.</p></div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer>
+                <p id="footer-text">&copy; 2026 Lunaris Community. Dibuat untuk panduan eksplorasi server Discord.</p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- JavaScript Logika Username & Bahasa -->
+    <script>
+        function handleLogin(event) {
+            event.preventDefault();
+            const usernameInput = document.getElementById('username-input').value.trim();
+            if (!usernameInput) return;
+
+            document.getElementById('display-username').innerText = usernameInput;
+            document.getElementById('avatar-badge').innerText = usernameInput.charAt(0).toUpperCase();
+
+            document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        function changeUser() {
+            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('welcome-screen').style.display = 'flex';
+        }
+
+        function toggleChannel(element) {
+            const parent = element.parentElement;
+            parent.classList.toggle('active');
+        }
+
+        const translations = {
+            id: {
+                toggleBtn: "English",
+                headerTitle: "🌙 Selamat Datang di Lunaris",
+                headerSubtitle: "Pusat Komunitas Night Owls, Gamers, dan Tempat Nongkrong Santai!",
+                btnJoin: "🚀 Masuk ke Server Discord",
+                aboutTitle: "📖 Tentang Server Lunaris",
+                aboutDesc: "Lunaris adalah komunitas Discord santai untuk bersosialisasi, bermain game, berbagi minat, dan bertemu orang-orang baru. Sebuah kolaborasi antara Lunaris dan Gemini.",
+                channelsTitle: "💬 Kategori & Channel Utama",
+
+                cWelcome: "Tempat menyambut member baru yang bergabung di server.",
+                cGoodbye: "Pemberitahuan ketika ada anggota yang keluar dari server.",
+                cRules: "Aturan resmi server yang wajib dipatuhi seluruh member.",
+                cIntroductions: "Perkenalkan diri kamu kepada anggota komunitas lainnya di sini.",
+                cExplore: "Panduan dan informasi dasar navigasi server Lunaris.",
+                cPickroles: "Pilih role kamu sendiri sesuai hobi, minat, dan identitas.",
+                cAnnouncements: "Pengumuman penting dan pembaruan terbaru dari pengurus server.",
+                cChat: "Area obrolan umum bebas untuk menyapa dan diskusi harian.",
+                cMemes: "Berbagi gambar lucu, meme, dan konten hiburan.",
+                cMedia: "Tempat berbagi tautan akun media sosial atau foto harian.",
+                cArt: "Pameran karya seni, gambar, atau hasil desain buatanmu.",
+                cQuotes: "Berbagi kata-kata bijak, motivasi, atau kutipan favorit.",
+                cMusic: "Diskusi seputar musik, lagu favorit, atau playlist.",
+                cGamechat: "Diskusi umum seputar game, update, dan rekomendasi game.",
+                cLfg: "Cari teman se-party atau tim untuk mabar game favorit.",
+                cAchievements: "Pamer pencapaian, trophy, atau rank di game kamu.",
+                cGamevideo: "Berbagi cuplikan video gameplay atau highlight keren.",
+                cGamescreenshots: "Membagikan tangkapan layar (screenshot) saat bermain game.",
+                cRandom: "Obrolan topik acak di luar tema umum server.",
+                cRate: "Minta opini atau penilaian dari member lain tentang topik tertentu.",
+                cSuggestions: "Kirimkan ide atau saran demi kemajuan server Lunaris.",
+                cStorytime: "Bagikan cerita pengalaman menarik, curhat, atau pengalaman hidup.",
+                cBotcommands: "Area umum untuk mengetik perintah (command) bot.",
+                cOwo: "Channel khusus bermain bot OwO.",
+                cXavier: "Channel khusus interaksi bot Xavier.",
+                cKoya: "Channel khusus perintah bot Koya.",
+                cAfkset: "Atur status AFK kamu di server.",
+                cHighlights: "Rangkuman aktivitas menarik tiap minggunya dari bot.",
+                cLevelup: "Notifikasi kenaikan level keaktifan member di server.",
+                cBotEvent: "Informasi event otomatis yang dipicu oleh sistem bot.",
+                cTicket: "Buat tiket jika butuh bantuan khusus dari staf.",
+                cTicketsave: "Arsip riwayat percakapan tiket bantuan.",
+                cBugreports: "Laporkan masalah teknis atau bug di server.",
+                cSupportSuggestions: "Saran khusus terkait sistem bantuan server.",
+                cStaffannouncement: "Pengumuman internal khusus moderator dan admin.",
+                cStaffchat: "Diskusi internal tim staf Lunaris.",
+                cAutomod: "Laporan otomatis dari AutoMod mengenai pelanggaran.",
+                cStaffmeeting: "Voice room untuk rapat rutin internal staf.",
+                cVcguide: "Panduan penggunaan fitur voice channel dinamis.",
+                cVcsettings: "Pengaturan batas member atau nama ruang suara.",
+                cPrivateroom: "🔒 Ruang suara privat khusus OWNER SAJA. Anggota lain tidak dapat bergabung.",
+                cVcgeneral: "Ruang obrolan suara santai umum.",
+                cVcgaming: "Ruang obrolan suara khusus mabar game.",
+                cVcmusic: "Ruang mendengarkan musik bersama.",
+                cVcafk: "Ruang suara santai khusus member yang ingin AFK atau sekadar pasif di VC.",
+                cCreateroom: "Klik untuk membuat temporary voice channel kamu sendiri.",
+
+                footerText: "© 2026 Lunaris Community. Dibuat untuk panduan eksplorasi server Discord."
+            },
+            en: {
+                toggleBtn: "Bahasa Indonesia",
+                headerTitle: "🌙 Welcome to Lunaris",
+                headerSubtitle: "The Hub for Night Owls, Gamers, and Casual Hangouts!",
+                btnJoin: "🚀 Join Discord Server",
+                aboutTitle: "📖 About Lunaris Server",
+                aboutDesc: "Lunaris is a casual Discord community for socializing, gaming, sharing interests, and meeting new people. A collaboration between Lunaris and Gemini.",
+                channelsTitle: "💬 Main Categories & Channels",
+
+                cWelcome: "A place to welcome new members joining the server.",
+                cGoodbye: "Notifications when a member leaves the server.",
+                cRules: "Official server rules that every member must follow.",
+                cIntroductions: "Introduce yourself to other community members here.",
+                cExplore: "Basic guide and navigation info for the Lunaris server.",
+                cPickroles: "Assign roles to yourself based on hobbies and interests.",
+                cAnnouncements: "Important announcements and updates from server admins.",
+                cChat: "General text channel for daily chats and conversations.",
+                cMemes: "Share funny images, memes, and entertainment content.",
+                cMedia: "Share links to your social media accounts or photos.",
+                cArt: "Showcase your artwork, drawings, or design creations.",
+                cQuotes: "Share inspiring quotes, motivation, or favorite sayings.",
+                cMusic: "Discuss music, share favorite tracks, or playlists.",
+                cGamechat: "General gaming chat, updates, and game recommendations.",
+                cLfg: "Looking For Group channel to find gaming teammates.",
+                cAchievements: "Show off your gaming trophies, achievements, or ranks.",
+                cGamevideo: "Share video gameplay clips or cool gaming highlights.",
+                cGamescreenshots: "Post screenshots captured during your gaming sessions.",
+                cRandom: "Random conversations outside general server topics.",
+                cRate: "Ask for opinions or ratings from other members.",
+                cSuggestions: "Submit ideas or feedback to improve the Lunaris server.",
+                cStorytime: "Share interesting personal stories or experiences.",
+                cBotcommands: "General channel to execute bot commands.",
+                cOwo: "Dedicated channel to interact with the OwO bot.",
+                cXavier: "Dedicated channel for Xavier bot commands.",
+                cKoya: "Dedicated channel for Koya bot commands.",
+                cAfkset: "Set your AFK status on the server.",
+                cHighlights: "Weekly highlight summaries generated by bots.",
+                cLevelup: "Level-up notifications based on member activity.",
+                cBotEvent: "Automated event alerts triggered by bot systems.",
+                cTicket: "Create a ticket if you need assistance from staff.",
+                cTicketsave: "Saved transcripts of past support tickets.",
+                cBugreports: "Report technical glitches or server issues.",
+                cSupportSuggestions: "Suggestions specifically regarding the ticket system.",
+                cStaffannouncement: "Internal announcements exclusively for moderators and admins.",
+                cStaffchat: "Private chat channel for the Lunaris staff team.",
+                cAutomod: "Automated alert logs generated by AutoMod.",
+                cStaffmeeting: "Private voice room for staff team meetings.",
+                cVcguide: "User guide for dynamic voice channel features.",
+                cVcsettings: "Configure user limits or dynamic room names.",
+                cPrivateroom: "🔒 Private voice channel restricted EXCLUSIVELY TO THE OWNER. Other members cannot join.",
+                cVcgeneral: "General voice lounge for casual discussions.",
+                cVcgaming: "Voice channel dedicated to group gaming.",
+                cVcmusic: "Voice channel to listen to music together.",
+                cVcafk: "A casual voice room for members who want to go AFK or hang out passively.",
+                cCreateroom: "Click to generate your own dynamic voice channel.",
+
+                footerText: "© 2026 Lunaris Community. Built for Discord server exploration guide."
+            }
+        };
+
+        let currentLang = 'id';
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'id' ? 'en' : 'id';
+            const lang = translations[currentLang];
+
+            document.getElementById('lang-toggle-text').innerText = lang.toggleBtn;
+            document.getElementById('header-title').innerText = lang.headerTitle;
+            document.getElementById('header-subtitle').innerText = lang.headerSubtitle;
+            document.getElementById('btn-join-text').innerText = lang.btnJoin;
+            document.getElementById('about-title').innerText = lang.aboutTitle;
+            document.getElementById('about-desc').innerText = lang.aboutDesc;
+            document.getElementById('channels-title').innerText = lang.channelsTitle;
+
+            document.getElementById('c-welcome').innerText = lang.cWelcome;
+            document.getElementById('c-goodbye').innerText = lang.cGoodbye;
+            document.getElementById('c-rules').innerText = lang.cRules;
+            document.getElementById('c-introductions').innerText = lang.cIntroductions;
+            document.getElementById('c-explore').innerText = lang.cExplore;
+            document.getElementById('c-pickroles').innerText = lang.cPickroles;
+            document.getElementById('c-announcements').innerText = lang.cAnnouncements;
+            document.getElementById('c-chat').innerText = lang.cChat;
+            document.getElementById('c-memes').innerText = lang.cMemes;
+            document.getElementById('c-media').innerText = lang.cMedia;
+            document.getElementById('c-art').innerText = lang.cArt;
+            document.getElementById('c-quotes').innerText = lang.cQuotes;
+            document.getElementById('c-music').innerText = lang.cMusic;
+            document.getElementById('c-gamechat').innerText = lang.cGamechat;
+            document.getElementById('c-lfg').innerText = lang.cLfg;
+            document.getElementById('c-achievements').innerText = lang.cAchievements;
+            document.getElementById('c-gamevideo').innerText = lang.cGamevideo;
+            document.getElementById('c-gamescreenshots').innerText = lang.cGamescreenshots;
+            document.getElementById('c-random').innerText = lang.cRandom;
+            document.getElementById('c-rate').innerText = lang.cRate;
+            document.getElementById('c-suggestions').innerText = lang.cSuggestions;
+            document.getElementById('c-storytime').innerText = lang.cStorytime;
+            document.getElementById('c-botcommands').innerText = lang.cBotcommands;
+            document.getElementById('c-owo').innerText = lang.cOwo;
+            document.getElementById('c-xavier').innerText = lang.cXavier;
+            document.getElementById('c-koya').innerText = lang.cKoya;
+            document.getElementById('c-afkset').innerText = lang.cAfkset;
+            document.getElementById('c-highlights').innerText = lang.cHighlights;
+            document.getElementById('c-levelup').innerText = lang.cLevelup;
+            document.getElementById('c-bot-event').innerText = lang.cBotEvent;
+            document.getElementById('c-ticket').innerText = lang.cTicket;
+            document.getElementById('c-ticketsave').innerText = lang.cTicketsave;
+            document.getElementById('c-bugreports').innerText = lang.cBugreports;
+            document.getElementById('c-support-suggestions').innerText = lang.cSupportSuggestions;
+            document.getElementById('c-staffannouncement').innerText = lang.cStaffannouncement;
+            document.getElementById('c-staffchat').innerText = lang.cStaffchat;
+            document.getElementById('c-automod').innerText = lang.cAutomod;
+            document.getElementById('c-staffmeeting').innerText = lang.cStaffmeeting;
+            document.getElementById('c-vcguide').innerText = lang.cVcguide;
+            document.getElementById('c-vcsettings').innerText = lang.cVcsettings;
+            document.getElementById('c-privateroom').innerText = lang.cPrivateroom;
+            document.getElementById('c-vcgeneral').innerText = lang.cVcgeneral;
+            document.getElementById('c-vcgaming').innerText = lang.cVcgaming;
+            document.getElementById('c-vcmusic').innerText = lang.cVcmusic;
+            document.getElementById('c-vcafk').innerText = lang.cVcafk;
+            document.getElementById('c-createroom').innerText = lang.cCreateroom;
+
+            document.getElementById('footer-text').innerText = lang.footerText;
+        }
+    </script>
+</body>
+</html>
